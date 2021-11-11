@@ -3,13 +3,11 @@ package com.bilgeadam.aliergul.main;
 import com.bilgeadam.aliergul.controller.UserController;
 import com.bilgeadam.aliergul.dto.DtoUserDetails;
 import com.bilgeadam.aliergul.utils.exceptions.ExceptionIncorrectPasswordBlockedStatus;
-import com.bilgeadam.aliergul.utils.helper.ConsoleHelper;
 import com.bilgeadam.aliergul.utils.helper.GlobalStrings;
 
 public class MainActivity {
 	private GlobalStrings language;
 	private MenuHelper menuHelper;
-	private ConsoleHelper consoleHelper;
 	
 	public static void main(String[] args) {
 		MainActivity main = new MainActivity();
@@ -20,10 +18,10 @@ public class MainActivity {
 	private void activity() {
 		this.language = new GlobalStrings("tr");
 		this.menuHelper = new MenuHelper(language);
-		this.consoleHelper = ConsoleHelper.getInstance(language);
+		
 		int choose = -1;
 		while (choose != 0) {
-			choose = consoleHelper.showMenu(language.getString("Globalization.APP_NAME"), menuHelper.getLoginMenu());
+			choose = menuHelper.getLoginMenu().show().readInteger();
 			switch (choose) {
 				case 1:
 					loginView();
@@ -86,7 +84,6 @@ public class MainActivity {
 			
 		}
 		this.menuHelper = new MenuHelper(language);
-		this.consoleHelper = ConsoleHelper.getInstance(language);
 		
 	}
 }

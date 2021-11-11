@@ -128,9 +128,9 @@ public class MenuBuilder {
 	
 	public void centerWrite(String msg) {
 		int length = msg.length() + 4;
-		String row = "";
+		String row = icon + " ";
 		if (lineCount > length) {
-			row = String.format(icon + "%-" + Math.abs(Math.ceil((lineCount - length) / 2)) + "s", " ");
+			row = String.format("%-" + Math.abs(Math.ceil((lineCount - length) / 2)) + "s", " ");
 			
 		}
 		row = row.concat(msg);
@@ -158,6 +158,21 @@ public class MenuBuilder {
 		}
 		
 		return newMetin.toString();
+	}
+	
+	public void addMenu(Object obj, String msj) {
+		if (menu == null) {
+			this.menu = new LinkedHashMap<Object, String>();
+			
+		}
+		this.menu.put(obj, msj);
+		
+	}
+	
+	public void removeMenu(Object key) {
+		if (this.menu.containsKey(key))
+			this.menu.remove(key);
+		
 	}
 	
 	public static class Builder {
@@ -212,4 +227,5 @@ public class MenuBuilder {
 			return new MenuBuilder(this);
 		}
 	}
+	
 }

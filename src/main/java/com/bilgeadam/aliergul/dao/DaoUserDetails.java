@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.bilgeadam.aliergul.dto.DtoUserDetails;
 import com.bilgeadam.aliergul.utils.exceptions.ExceptionIncorrectPasswordBlockedStatus;
@@ -47,6 +49,7 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 	private int getEmailtoUserId(String email) {
 		int id = -1;
 		try (Connection conn = getInterfaceConnection()) {
+			
 			final String query = "SELECT user_id FROM public.blog_users where user_email=?;";
 			PreparedStatement pre = conn.prepareStatement(query);
 			pre.setString(1, email);
@@ -63,12 +66,14 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 	
 	@Override
 	public boolean createAccount(DtoUserDetails dto) {
-		final String queryUser = "INSERT INTO public.blog_users( user_email, user_password) " + "VALUES (?, ?);";
+		final String queryUser = "INSERT INTO public.blog_users( user_email, user_password ,user_meta_data) "
+				+ "VALUES (?, ?, ?);";
 		final String queryDetails = "INSERT INTO public.users_detail(user_id,user_name, user_surname, user_phone, user_hescode, user_role_id)	VALUES ( ?,?, ?, ?, ?, 3);";
 		try (Connection conn = getInterfaceConnection()) {
 			PreparedStatement preparedStatement = conn.prepareStatement(queryUser);
 			preparedStatement.setString(1, dto.getEmail());
 			preparedStatement.setString(2, dto.getPasswod());
+			preparedStatement.setString(3, dto.getMetaData());
 			if (preparedStatement.execute()) {
 				preparedStatement = conn.prepareStatement(queryDetails);
 				preparedStatement.setInt(1, getNewUserID());
@@ -118,14 +123,17 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 	@Override
 	public boolean updateUser(DtoUserDetails dto) {
 		boolean isSuccessful = false;
-		final String queryUser = "UPDATE public.blog_users SET( user_email=?, user_password=?) WHERE user_id=?; ";
-		final String queryDetails = "UPDATE public.users_detail SET(user_name=?, user_surname=?, user_phone=?, user_hescode=?) WHERE user_id=?";
+		final String queryUser = "UPDATE public.blog_users SET user_email=?, user_password=?, user_meta_data=? WHERE user_id=?; ";
+		final String queryDetails = "UPDATE public.users_detail SET user_name=?, user_surname=?, user_phone=?, user_hescode=? WHERE user_id=?";
 		try (Connection conn = getInterfaceConnection()) {
 			// blog_users
 			PreparedStatement preparedStatement = conn.prepareStatement(queryUser);
 			preparedStatement.setString(1, dto.getEmail());
 			preparedStatement.setString(2, dto.getPasswod());
-			preparedStatement.setInt(3, dto.getId());
+			String metaData = dto.getName() + dto.getSurName() + dto.getHescode()
+					+ dto.getEmail().substring(0, dto.getEmail().indexOf("@"));
+			preparedStatement.setString(3, metaData);
+			preparedStatement.setInt(4, dto.getId());
 			int num = preparedStatement.executeUpdate();
 			// users_detail
 			preparedStatement = conn.prepareStatement(queryDetails);
@@ -148,18 +156,33 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 	
 	@Override
 	public DtoUserDetails getUserDetails(DtoUserDetails dto) {
-		final String query = "SELECT  u.user_id, u.user_email, u.user_password, u.user_is_active,"
+		final String query = "SELECT  u.user_id, u.user_email, u.user_password, u.user_is_active, u.user_meta_data,"
 				+ " d.user_name,d.user_surname, d.user_phone,d.user_hescode, d.user_role_id, d.user_created_date"
 				+ " FROM public.users_detail AS d JOIN public.blog_users AS u ON u.user_id = d.user_id WHERE u.user_email=?;";
+		List<DtoUserDetails> tempList = getFindQueryUser(query, dto.getEmail());
+		return tempList.size() > 0 ? tempList.get(0) : null;
+	}
+	
+	@Override
+	public List<DtoUserDetails> getFindUser(DtoUserDetails dto) {
+		final String query = "SELECT  u.user_id, u.user_email, u.user_password, u.user_is_active, u.user_meta_data,"
+				+ " d.user_name,d.user_surname, d.user_phone,d.user_hescode, d.user_role_id, d.user_created_date"
+				+ " FROM public.users_detail AS d JOIN public.blog_users AS u ON u.user_id = d.user_id WHERE u.user_meta_data LIKE ?;";
+		return getFindQueryUser(query, dto.getMetaData());
+	}
+	
+	private List<DtoUserDetails> getFindQueryUser(String query, String findString) {
+		List<DtoUserDetails> tempList = new ArrayList<>();
 		DtoUserDetails uDetails = null;
 		try (Connection conn = getInterfaceConnection()) {
 			PreparedStatement preparedStatement = conn.prepareStatement(query);
-			preparedStatement.setString(1, dto.getEmail());
+			preparedStatement.setString(1, findString);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
 				int id = result.getInt("user_id");
 				String email = result.getString("user_email");
 				String user_password = result.getString("user_password");
+				String metaData = result.getString("user_meta_data");
 				boolean user_is_active = result.getBoolean("user_is_active");
 				String user_name = result.getString("user_name");
 				String user_surname = result.getString("user_surname");
@@ -167,14 +190,15 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 				String user_hescode = result.getString("user_hescode");
 				int user_role_id = result.getInt("user_role_id");
 				Date user_created_date = result.getDate("user_created_date");
-				uDetails = new DtoUserDetails(id, user_created_date, email, user_password, user_is_active, user_name,
-						user_surname, user_phone, user_hescode, user_role_id);
+				uDetails = new DtoUserDetails(id, user_created_date, email, user_password, metaData, user_is_active,
+						user_name, user_surname, user_phone, user_hescode, user_role_id);
+				tempList.add(uDetails);
 			}
 		} catch (SQLException e) {
-			System.out.println("HATA - getUserDetails(DtoUserDetails): " + e.getMessage());
+			System.out.println("HATA - getFindQueryUser(DtoUserDetails): " + e.getMessage());
 			
 		}
-		return uDetails;
+		return tempList;
 	}
 	
 }

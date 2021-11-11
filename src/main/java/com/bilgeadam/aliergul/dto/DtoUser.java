@@ -6,20 +6,22 @@ import java.sql.Date;
 public class DtoUser extends CommonPropery implements Serializable {
 	
 	private static final long serialVersionUID = -7360970544462181013L;
-	private String email;
-	private String passwod;
-	private boolean active;
+	private String email = "";
+	private String passwod = "";
+	private boolean active = true;
+	protected String metaData = "";
 	
 	public DtoUser() {
 		super();
 		
 	}
 	
-	public DtoUser(int id, Date createDate, String email, String passwod, boolean active) {
+	public DtoUser(int id, Date createDate, String email, String passwod, String metaData, boolean active) {
 		super(id, createDate);
 		this.email = email;
 		this.passwod = passwod;
 		this.active = active;
+		this.metaData = metaData;
 	}
 	
 	public DtoUser(String email, String passwod) {
@@ -36,6 +38,14 @@ public class DtoUser extends CommonPropery implements Serializable {
 	
 	public String getEmail() {
 		return email;
+	}
+	
+	public String getMetaData() {
+		return metaData;
+	}
+	
+	public void setMetaData(String metaData) {
+		this.metaData = metaData;
 	}
 	
 	public void setEmail(String email) {

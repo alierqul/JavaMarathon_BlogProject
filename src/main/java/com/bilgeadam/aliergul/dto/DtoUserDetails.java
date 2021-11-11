@@ -19,6 +19,7 @@ public class DtoUserDetails extends DtoUser implements Serializable {
 	
 	public DtoUserDetails(String email, String passwod) {
 		super(email, passwod);
+		this.metaData = name + surName + hescode + email.substring(0, email.indexOf("@"));
 	}
 	
 	public DtoUserDetails(String email, String passwod, String name, String surName, String phone, String hescode) {
@@ -27,17 +28,19 @@ public class DtoUserDetails extends DtoUser implements Serializable {
 		this.surName = surName;
 		this.phone = phone;
 		this.hescode = hescode;
+		this.metaData = name + surName + hescode + email.substring(0, email.indexOf("@"));
 		
 	}
 	
-	public DtoUserDetails(int id, Date createDate, String email, String passwod, boolean active, String name,
-			String surName, String phone, String hescode, int roleId) {
-		super(id, createDate, email, passwod, active);
+	public DtoUserDetails(int id, Date createDate, String email, String passwod, String metaData, boolean active,
+			String name, String surName, String phone, String hescode, int roleId) {
+		super(id, createDate, email, passwod, metaData, active);
 		this.name = name;
 		this.surName = surName;
 		this.phone = phone;
 		this.hescode = hescode;
 		this.roleId = roleId;
+		this.metaData = name + surName + hescode + email.substring(0, email.indexOf("@"));
 	}
 	
 	@Override

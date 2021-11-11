@@ -1,5 +1,7 @@
 package com.bilgeadam.aliergul.controller;
 
+import java.util.List;
+
 import com.bilgeadam.aliergul.dao.DaoUserDetails;
 import com.bilgeadam.aliergul.dao.IUserOperations;
 import com.bilgeadam.aliergul.dto.DtoUserDetails;
@@ -36,6 +38,12 @@ public enum UserController implements IUserOperations<DtoUserDetails> {
 	public DtoUserDetails getUserDetails(DtoUserDetails dto) {
 		// TODO Auto-generated method stub
 		return dao.getUserDetails(dto);
+	}
+	
+	@Override
+	public List<DtoUserDetails> getFindUser(DtoUserDetails dto) {
+		// TODO Auto-generated method stub
+		return dao.getFindUser(dto);
 	}
 	
 }
