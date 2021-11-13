@@ -75,6 +75,7 @@ public class MainActivity {
 				System.out.println(language.getString("Globalization.SUCCESSFUL_LOGIN"));
 				UserPanel.getInstance().mainUserPanel(user);
 			} else {
+				SharedPreferencesHelper.getInstance.writeToFile(new DtoUserDetails());
 				System.out.println(language.getString("Globalization.ERROR_NEW_ACCOUNT"));
 			}
 		} catch (ExceptionIncorrectPasswordBlockedStatus e) {

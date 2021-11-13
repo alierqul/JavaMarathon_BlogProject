@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -130,16 +131,16 @@ public class StringHelper {
 		return newMetin.toString();
 	}
 	
-	private String convertMD5(String parola) {
+	public String convertMD5(String pass) {
 		try {
-			MessageDigest messageDigestNesnesi = MessageDigest.getInstance("MD5");
-			messageDigestNesnesi.update(parola.getBytes());
-			byte messageDigestDizisi[] = messageDigestNesnesi.digest();
+			MessageDigest messageDigit = MessageDigest.getInstance("MD5");
+			messageDigit.update(pass.getBytes());
+			byte messageDigitArray[] = messageDigit.digest();
 			StringBuffer sb16 = new StringBuffer();
 			StringBuffer sb32 = new StringBuffer();
-			for (int i = 0; i < messageDigestDizisi.length; i++) {
-				sb16.append(Integer.toString((messageDigestDizisi[i] & 0xff) + 0x100, 16).substring(1));
-				sb32.append(Integer.toString((messageDigestDizisi[i] & 0xff) + 0x100, 32));
+			for (int i = 0; i < messageDigitArray.length; i++) {
+				sb16.append(Integer.toString((messageDigitArray[i] & 0xff) + 0x100, 16).substring(1));
+				sb32.append(Integer.toString((messageDigitArray[i] & 0xff) + 0x100, 32));
 				
 			}
 			return sb32.toString();
@@ -147,6 +148,17 @@ public class StringHelper {
 			System.err.println(ex);
 		}
 		return "-1";
+	}
+	
+	public String encodeBase64(String pass) {
+		
+		return Base64.getEncoder().encodeToString(pass.getBytes());
+		
+	}
+	
+	public String decodeBase64(String pass) {
+		
+		return new String(Base64.getDecoder().decode(pass));
 	}
 	
 }

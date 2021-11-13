@@ -22,7 +22,9 @@ public enum SharedPreferencesHelper {
 		try (ObjectInputStream output = new ObjectInputStream(new FileInputStream(file));) {
 			Object obj = null;
 			if ((obj = output.readObject()) != null) {
-				return (DtoUserDetails) obj;
+				DtoUserDetails u = (DtoUserDetails) obj;
+				u.setPasswod(StringHelper.getInstance().decodeBase64(u.getPasswod()));
+				return u;
 			}
 			
 		} catch (IOException | ClassNotFoundException ex) {
@@ -35,7 +37,7 @@ public enum SharedPreferencesHelper {
 	public boolean writeToFile(DtoUserDetails dto) {
 		Map<String, String> map = null;
 		try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(new File(PATH)))) {
-			
+			dto.setPasswod(StringHelper.getInstance().encodeBase64(dto.getPasswod()));
 			output.writeObject(dto);
 			output.flush();
 			

@@ -25,7 +25,7 @@ public enum ChatServer {
 	private GlobalStrings language = MenuLanguage.getInstance().getLanguage();
 	
 	public void startServer(DtoUserDetails user, DtoUserDetails friend) {
-		System.err.println("Sohbet Başlatıldı.");
+		
 		this.listMessageHistory = new ArrayList<>();
 		this.port = new PortInfo();
 		this.user = user;
@@ -35,7 +35,8 @@ public enum ChatServer {
 		try (ServerSocket sServer = new ServerSocket(port.getPort())) {
 			Socket socket = sServer.accept();
 			newMessageConroleLoop();
-			new MenuBuilder.Builder().title(language.getString("Globalization.CHAT_APP_MENU")).build().show();
+			new MenuBuilder.Builder().title(language.getString("Globalization.CHAT_APP_MENU")).lineCount(50).build()
+					.show();
 			inComingMessage(socket);
 		} catch (IOException e) {
 			System.err.println("Server Başlatılamadı.");
@@ -51,6 +52,7 @@ public enum ChatServer {
 					if (listMessageHistory.size() != iControleer.getListMessage(user, friend).size()) {
 						listMessageHistory = iControleer.getListMessage(user, friend);
 						historyMessageBuilder(listMessageHistory).show();
+						System.out.print("[ " + user.getName() + "] : ");
 					}
 					try {
 						Thread.sleep(1000);
