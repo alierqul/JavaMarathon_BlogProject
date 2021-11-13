@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.bilgeadam.aliergul.dto.DtoBlogRole;
@@ -141,6 +142,29 @@ public class DaoAdmin implements IAdminOperations<DtoUserDetails> {
 	public DtoBlogRole getUserRole(DtoUserDetails dto) {
 		
 		return this.role;
+	}
+	
+	@Override
+	public Map<Date, Integer> countOfRecordByDay() throws ExceptionNotAuthorizedError {
+		Map<Date, Integer> temp = new LinkedHashMap<>();
+		if (this.role.isViewNumberOfRecord()) {
+			
+			try (Connection conn = getInterfaceConnection()) {
+				final String query = "SELECT DATE(log_login_date)as logDate , COUNT(*) as logCount FROM public.login_log_history GROUP BY DATE(log_login_date) ORDER BY DATE(log_login_date) DESC;";
+				PreparedStatement pStatement = conn.prepareStatement(query);
+				
+				ResultSet result = pStatement.executeQuery();
+				while (result.next()) {
+					temp.put(result.getDate("logDate"), result.getInt("logCount"));
+				}
+			} catch (SQLException e) {
+				System.out.println("HATA: countOfRecordByDay() :" + e.getMessage());
+			}
+		} else {
+			throw new ExceptionNotAuthorizedError("Globalization.ERROR_AUTHORIZED");
+		}
+		
+		return temp;
 	}
 	
 }

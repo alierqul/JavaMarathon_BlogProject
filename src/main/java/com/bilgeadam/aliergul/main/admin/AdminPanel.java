@@ -1,5 +1,6 @@
 package com.bilgeadam.aliergul.main.admin;
 
+import java.sql.Date;
 import java.util.Map;
 
 import com.bilgeadam.aliergul.controller.AdminController;
@@ -62,7 +63,7 @@ public class AdminPanel {
 									.countOfRecordByRoles().entrySet()) {
 								String key = entry.getKey();
 								Integer val = entry.getValue();
-								menuCounts.addMenu("[ " + key + " ] =", "[ " + val + " ]");
+								menuCounts.addMenu("[ " + key, "] = [ " + val + " ]");
 							}
 							menuCounts.show().readInteger();
 						} catch (ExceptionNotAuthorizedError e) {
@@ -73,6 +74,22 @@ public class AdminPanel {
 					}
 					break;
 				case 5:
+					try {
+						MenuBuilder counLogintoDay = new MenuBuilder.Builder()
+								.title(language.getString("Globalization.ADMIN_DAY_LOGIN_COUNT")).build();
+						String kisi = language.getString("Globalization.USER");
+						for (Map.Entry<Date, Integer> entry : adminController.countOfRecordByDay().entrySet()) {
+							Date key = entry.getKey();
+							Integer val = entry.getValue();
+							counLogintoDay.addMenu("[ " + key.toString(),
+									" ] : [ " + String.format("%5s %s ]", val + "", kisi));
+						}
+						counLogintoDay.show().readInteger();
+					} catch (ExceptionNotAuthorizedError e) {
+						System.err.println(language.getString(e.getMessage()));
+					}
+					break;
+				case 6:
 					language = MenuLanguage.getInstance().changedLanguage();
 					break;
 				case 0:
@@ -159,10 +176,10 @@ public class AdminPanel {
 		
 		if (adminController.getUserRole(uDetials).isViewNumberOfRecord()) {
 			menu.addMenu(4, language.getString("Globalization.ADMIN_COUNT"));
+			menu.addMenu(5, language.getString("Globalization.ADMIN_DAY_LOGIN_COUNT"));
 		}
-		if (adminController.getUserRole(uDetials).isViewNumberOfRecord()) {
-			menu.addMenu(5, language.getString("Globalization.LANGUAGE"));
-		}
+		
+		menu.addMenu(6, language.getString("Globalization.LANGUAGE"));
 		menu.addMenu(0, language.getString("Globalization.EXIT"));
 		return menu;
 		

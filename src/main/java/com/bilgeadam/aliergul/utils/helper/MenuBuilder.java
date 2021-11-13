@@ -16,6 +16,7 @@ public class MenuBuilder {
 	private Map<Object, String> menu;
 	private char icon = '▒';// Alt + 176 = ░ Alt + 177 = ▒ Alt + 178 = ▓
 	private Scanner in = null;
+	private int keyLengthMax = 1;
 	
 	public MenuBuilder(Builder build) {
 		this.title = build.title;
@@ -26,14 +27,6 @@ public class MenuBuilder {
 		this.icon = build.icon;
 		in = new Scanner(System.in);
 	}
-	
-	// public static void main(String[] args) {
-	// new MenuBuilder.Builder().title("Ali başlık 1").body("user Panel").addMenu(1,
-	// "Ali Ergül 1987 01 21 Erkek")
-	// .addMenu(" Detay", "Ugur Ergül 1987 01 21 Erkek çalışıyır").icon('▒')
-	// .selectMessage("Lüfen Seçtiğiniz kayıt numarasını
-	// yazınız....").build().show();
-	// }
 	
 	public MenuBuilder show() {
 		int rowCount = rowCountFind() + 4;
@@ -96,15 +89,16 @@ public class MenuBuilder {
 			Object key = entry.getKey();
 			String val = entry.getValue();
 			if (key instanceof Integer) {
-				String row = String.format(icon + " %02d - %s", (int) key, val);
-				System.out.printf("%s%" + (lineCount - row.length()) + "s%n", row, icon);
+				String row = String.format(icon + " %02d - %s", (int) key, val.trim());
+				System.out.printf("%s%" + (lineCount - row.length()) + "s", row, icon);
 			}
 			
 			if (key instanceof String) {
-				String row = String.format(icon + " %s %s", (String) key, val);
-				System.out.printf("%s%" + (lineCount - row.length()) + "s%n", row, icon);
+				String row = String.format(icon + " %-" + keyLengthMax + "s %s", key.toString(), val.trim());
+				row = row.concat(String.format("%" + (lineCount - row.length()) + "s", icon));
+				System.out.print(row);
 			}
-			
+			System.out.println();
 		}
 	}
 	
@@ -112,12 +106,14 @@ public class MenuBuilder {
 		List<Integer> rowCount = new ArrayList<>();
 		rowCount.add(title.length());
 		rowCount.add(body.length());
+		rowCount.add(selectMessage.length());
 		if (menu != null) {
 			for (Map.Entry<Object, String> entry : menu.entrySet()) {
-				Object key = entry.getKey();
-				String val = entry.getValue();
-				
-				rowCount.add(val.length() + key.toString().length() + 4);
+				int key = entry.getKey().toString().length();
+				int val = entry.getValue().length();
+				if (key > keyLengthMax)
+					keyLengthMax = key;
+				rowCount.add(val + keyLengthMax + 4);
 				
 			}
 		}
@@ -165,6 +161,7 @@ public class MenuBuilder {
 			this.menu = new LinkedHashMap<Object, String>();
 			
 		}
+		
 		this.menu.put(obj, msj);
 		
 	}

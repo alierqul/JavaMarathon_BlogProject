@@ -1,6 +1,7 @@
 package com.bilgeadam.aliergul.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.util.Map;
 
 import com.bilgeadam.aliergul.dto.DtoBlogRole;
@@ -16,6 +17,8 @@ public interface IAdminOperations<T> {
 	public boolean changedUserRoleStatus(T dto) throws ExceptionNotAuthorizedError;
 	
 	public boolean changedUserActiveStatus(T dto) throws ExceptionNotAuthorizedError;
+	
+	public Map<Date, Integer> countOfRecordByDay() throws ExceptionNotAuthorizedError;
 	
 	public Map<String, Integer> countOfRecordByRoles() throws ExceptionNotAuthorizedError;
 	

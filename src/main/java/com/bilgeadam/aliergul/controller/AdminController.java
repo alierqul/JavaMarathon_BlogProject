@@ -1,5 +1,6 @@
 package com.bilgeadam.aliergul.controller;
 
+import java.sql.Date;
 import java.util.Map;
 
 import com.bilgeadam.aliergul.dao.DaoAdmin;
@@ -52,6 +53,12 @@ public class AdminController implements IAdminOperations<DtoUserDetails> {
 	public DtoBlogRole getUserRole(DtoUserDetails dto) {
 		
 		return dao.getUserRole(dto);
+	}
+	
+	@Override
+	public Map<Date, Integer> countOfRecordByDay() throws ExceptionNotAuthorizedError {
+		
+		return dao.countOfRecordByDay();
 	}
 	
 }

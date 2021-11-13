@@ -33,9 +33,9 @@ public class DaoMessage implements IMessageOperations {
 	
 	@Override
 	public List<DtoMessage> getListMessage(DtoUserDetails user, DtoUserDetails friend) {
-		final String queryUser = " SELECT  i.inbox_id, i.user_id, i.message_id, i.inbox_message, i.created_date, d.user_name,d.user_surname,u.user_email"
-				+ "FROM public.blog_inbox as i" + "INNER JOIN public.blog_users as u ON u.user_id = i.user_id"
-				+ "INNER JOIN public.users_detail as d ON d.user_id = u.user_id WHERE (i.user_id=? or i.message_id=?) and  (i.user_id=? or i.message_id=?);";
+		final String queryUser = "SELECT i.inbox_id, i.user_id, i.message_id, i.inbox_message, i.created_date, d.user_name, d.user_surname, u.user_email"
+				+ " FROM public.blog_inbox as i INNER JOIN public.blog_users as u ON u.user_id = i.user_id"
+				+ " INNER JOIN public.users_detail as d ON d.user_id = u.user_id WHERE ((i.user_id=? or i.message_id=?) and (i.user_id=? or i.message_id=?));";
 		List<DtoMessage> temp = new ArrayList<>();
 		try (Connection conn = getInterfaceConnection()) {
 			PreparedStatement preparedStatement = conn.prepareStatement(queryUser);
@@ -45,18 +45,18 @@ public class DaoMessage implements IMessageOperations {
 			preparedStatement.setInt(4, friend.getId());
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
-				int inboxID = result.getInt("i.inbox_id");
-				int userID = result.getInt("i.user_id");
-				int messageID = result.getInt("i.message_id");
-				String message = result.getString("i.inbox_message");
-				Date created_date = result.getDate(" i.created_date");
-				String nameAndSurname = result.getString("d.user_name") + " " + result.getString("d.user_surname");
-				String email = result.getString("u.user_email");
+				int inboxID = result.getInt("inbox_id");
+				int userID = result.getInt("user_id");
+				int messageID = result.getInt("message_id");
+				String message = result.getString("inbox_message");
+				Date created_date = result.getDate("created_date");
+				String nameAndSurname = result.getString("user_name") + " " + result.getString("user_surname");
+				String email = result.getString("user_email");
 				temp.add(new DtoMessage(inboxID, created_date, userID, messageID, message, nameAndSurname, email));
 			}
 			
 		} catch (SQLException e) {
-			System.out.println("HATA - insert(DaoMessage): " + e.getMessage());
+			System.out.println("HATA - getListMessage(DaoMessage): " + e.getMessage());
 			
 		}
 		
@@ -91,7 +91,7 @@ public class DaoMessage implements IMessageOperations {
 			}
 			
 		} catch (SQLException e) {
-			System.out.println("HATA - insert(DaoMessage): " + e.getMessage());
+			System.out.println("HATA - getListUserMessage(DtoUserDetails): " + e.getMessage());
 			
 		}
 		
