@@ -1,4 +1,4 @@
-package com.bilgeadam.aliergul.utils.helper;
+package com.bilgeadam.aliergul.utils.language;
 
 import java.util.Locale;
 import java.util.MissingResourceException;

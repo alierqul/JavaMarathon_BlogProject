@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Scanner;
 
+import com.bilgeadam.aliergul.utils.language.GlobalStrings;
+
 /**
  * Singleton Design Pattern (2)
  * EagerCache

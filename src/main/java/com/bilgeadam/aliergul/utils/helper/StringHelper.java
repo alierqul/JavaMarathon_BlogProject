@@ -1,5 +1,7 @@
 package com.bilgeadam.aliergul.utils.helper;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -126,6 +128,25 @@ public class StringHelper {
 		}
 		
 		return newMetin.toString();
+	}
+	
+	private String convertMD5(String parola) {
+		try {
+			MessageDigest messageDigestNesnesi = MessageDigest.getInstance("MD5");
+			messageDigestNesnesi.update(parola.getBytes());
+			byte messageDigestDizisi[] = messageDigestNesnesi.digest();
+			StringBuffer sb16 = new StringBuffer();
+			StringBuffer sb32 = new StringBuffer();
+			for (int i = 0; i < messageDigestDizisi.length; i++) {
+				sb16.append(Integer.toString((messageDigestDizisi[i] & 0xff) + 0x100, 16).substring(1));
+				sb32.append(Integer.toString((messageDigestDizisi[i] & 0xff) + 0x100, 32));
+				
+			}
+			return sb32.toString();
+		} catch (NoSuchAlgorithmException ex) {
+			System.err.println(ex);
+		}
+		return "-1";
 	}
 	
 }

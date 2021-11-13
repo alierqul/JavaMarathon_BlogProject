@@ -3,7 +3,7 @@ package com.bilgeadam.aliergul.dao;
 import java.sql.Connection;
 import java.util.List;
 
-import com.bilgeadam.aliergul.utils.DatabaseConnection;
+import com.bilgeadam.aliergul.utils.database.DatabaseConnection;
 import com.bilgeadam.aliergul.utils.exceptions.ExceptionIncorrectPasswordBlockedStatus;
 
 public interface IUserOperations<T> {

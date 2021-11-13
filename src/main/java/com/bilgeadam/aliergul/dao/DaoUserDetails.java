@@ -1,5 +1,7 @@
 package com.bilgeadam.aliergul.dao;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -71,9 +73,9 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 		final String queryDetails = "INSERT INTO public.users_detail(user_id,user_name, user_surname, user_phone, user_hescode, user_role_id)	VALUES ( ?,?, ?, ?, ?, 3);";
 		try (Connection conn = getInterfaceConnection()) {
 			PreparedStatement preparedStatement = conn.prepareStatement(queryUser);
-			preparedStatement.setString(1, dto.getEmail());
-			preparedStatement.setString(2, dto.getPasswod());
-			preparedStatement.setString(3, dto.getMetaData());
+			preparedStatement.setString(1, dto.getEmail().toLowerCase());
+			preparedStatement.setString(2, convertMD5(dto.getPasswod()));
+			preparedStatement.setString(3, dto.getMetaData().toLowerCase());
 			if (preparedStatement.execute()) {
 				preparedStatement = conn.prepareStatement(queryDetails);
 				preparedStatement.setInt(1, getNewUserID());
@@ -92,6 +94,25 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 		return false;
 	}
 	
+	private String convertMD5(String parola) {
+		try {
+			MessageDigest messageDigestNesnesi = MessageDigest.getInstance("MD5");
+			messageDigestNesnesi.update(parola.getBytes());
+			byte messageDigestDizisi[] = messageDigestNesnesi.digest();
+			StringBuffer sb16 = new StringBuffer();
+			StringBuffer sb32 = new StringBuffer();
+			for (int i = 0; i < messageDigestDizisi.length; i++) {
+				sb16.append(Integer.toString((messageDigestDizisi[i] & 0xff) + 0x100, 16).substring(1));
+				sb32.append(Integer.toString((messageDigestDizisi[i] & 0xff) + 0x100, 32));
+				
+			}
+			return sb32.toString();
+		} catch (NoSuchAlgorithmException ex) {
+			System.err.println(ex);
+		}
+		return "-1";
+	}
+	
 	@Override
 	public boolean logIn(DtoUserDetails dto) throws ExceptionIncorrectPasswordBlockedStatus {
 		boolean isSuccessful = false;
@@ -99,7 +120,7 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 		try (Connection conn = getInterfaceConnection()) {
 			PreparedStatement preparedStatement = conn.prepareStatement(queryUser);
 			preparedStatement.setString(1, dto.getEmail());
-			preparedStatement.setString(2, dto.getPasswod());
+			preparedStatement.setString(2, convertMD5(dto.getPasswod()));
 			ResultSet result = preparedStatement.executeQuery();
 			
 			while (result.next()) {
@@ -128,11 +149,11 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 		try (Connection conn = getInterfaceConnection()) {
 			// blog_users
 			PreparedStatement preparedStatement = conn.prepareStatement(queryUser);
-			preparedStatement.setString(1, dto.getEmail());
-			preparedStatement.setString(2, dto.getPasswod());
+			preparedStatement.setString(1, dto.getEmail().toLowerCase());
+			preparedStatement.setString(2, convertMD5(dto.getPasswod()));
 			String metaData = dto.getName() + dto.getSurName() + dto.getHescode()
 					+ dto.getEmail().substring(0, dto.getEmail().indexOf("@"));
-			preparedStatement.setString(3, metaData);
+			preparedStatement.setString(3, metaData.toLowerCase());
 			preparedStatement.setInt(4, dto.getId());
 			int num = preparedStatement.executeUpdate();
 			// users_detail

@@ -1,88 +1,30 @@
-package com.bilgeadam.aliergul.main;
-
-import java.util.List;
+package com.bilgeadam.aliergul.main.profile;
 
 import com.bilgeadam.aliergul.controller.UserController;
 import com.bilgeadam.aliergul.dto.DtoUserDetails;
+import com.bilgeadam.aliergul.main.language.MenuLanguage;
 import com.bilgeadam.aliergul.utils.helper.ConsoleHelper;
-import com.bilgeadam.aliergul.utils.helper.GlobalStrings;
 import com.bilgeadam.aliergul.utils.helper.MenuBuilder;
+import com.bilgeadam.aliergul.utils.language.GlobalStrings;
 
-public class UserPanel {
-	private static GlobalStrings language;
-	private static UserPanel instance;
-	
+public class MenuProfile {
+	private static MenuProfile instance;
+	private GlobalStrings language;
 	private DtoUserDetails uDetails;
 	
-	private UserPanel() {
+	private MenuProfile() {
 		
 	}
 	
-	public static UserPanel getInstance(GlobalStrings language) {
-		if (instance == null) {
-			instance = new UserPanel();
-		}
-		UserPanel.language = language;
+	public static MenuProfile getInstance() {
+		if (instance == null)
+			instance = new MenuProfile();
+		
 		return instance;
 	}
 	
-	public void mainUserPanel(DtoUserDetails uEmailAndPassword) {
-		int choose = -1;
-		
-		while (choose != 4) {
-			choose = new MenuBuilder.Builder().title(language.getString("Globalization.USER_PANEL"))
-					.addMenu(1, language.getString("Globalization.SHOW_PROFILE"))
-					.addMenu(2, language.getString("Globalization.INBOX"))
-					.addMenu(3, language.getString("Globalization.SEARCH"))
-					.addMenu(4, language.getString("Globalization.SAFE_EXIT"))
-					.selectMessage(language.getString("Globalization.ENTER_NUMBER_ONLY")).build().show().readInteger();
-			switch (choose) {
-				case 1:
-					viewProfileInfo(uEmailAndPassword);
-					break;
-				case 2:
-					
-					break;
-				case 3:
-					viewProfileSearch();
-					break;
-				
-				default:
-					break;
-			}
-		}
-		
-	}
-	
-	private void viewProfileSearch() {
-		String searchWord = language.getString("Globalization.TO_SEARCH_WORD");
-		
-		new MenuBuilder.Builder().title(language.getString("Globalization.SEARCH")).body(searchWord).lineCount(30)
-				.build().show();
-		
-		String findQuery = ConsoleHelper.getInstance(language).readString(searchWord + " : ");
-		DtoUserDetails dto = new DtoUserDetails();
-		dto.setMetaData("%" + findQuery + "%");
-		List<DtoUserDetails> tempList = UserController.getInstance.getFindUser(dto);
-		if (tempList.size() > 0) {
-			MenuBuilder filterMenu = new MenuBuilder.Builder().title(searchWord + ": " + findQuery)
-					.selectMessage(language.getString("Globalization.SELECT_A_USER_TO_SEND_MESSAGE")).build();
-			int i = 0;
-			for (DtoUserDetails uDetails : tempList) {
-				
-				filterMenu.addMenu(i++, uDetails.getName().toUpperCase() + " " + uDetails.getSurName().toUpperCase()
-						+ " " + uDetails.getEmail());
-				
-			}
-			filterMenu.show().readInteger();
-		} else {
-			System.err.println(
-					language.getString("Globalization.SEARCH_NOT_FOUND") + "\n" + searchWord + ":" + findQuery);
-		}
-		
-	}
-	
 	public void viewProfileInfo(DtoUserDetails uEmailAndPassword) {
+		this.language = MenuLanguage.getInstance().getLanguage();
 		this.uDetails = UserController.getInstance.getUserDetails(uEmailAndPassword);
 		ConsoleHelper cHelper = ConsoleHelper.getInstance(language);
 		int choose = -1;
@@ -147,6 +89,8 @@ public class UserPanel {
 						menuProfile.removeMenu(7);
 					}
 					break;
+				case 0:
+					break;
 				default:
 					System.err.println(language.getString("Globalization.ERROR_NOT_CHANGED"));
 					break;
@@ -155,5 +99,4 @@ public class UserPanel {
 		}
 		
 	}
-	
 }

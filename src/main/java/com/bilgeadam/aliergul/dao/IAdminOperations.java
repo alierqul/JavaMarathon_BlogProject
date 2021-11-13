@@ -3,18 +3,19 @@ package com.bilgeadam.aliergul.dao;
 import java.sql.Connection;
 import java.util.Map;
 
-import com.bilgeadam.aliergul.utils.DatabaseConnection;
+import com.bilgeadam.aliergul.dto.DtoBlogRole;
+import com.bilgeadam.aliergul.utils.database.DatabaseConnection;
 import com.bilgeadam.aliergul.utils.exceptions.ExceptionNotAuthorizedError;
 
 public interface IAdminOperations<T> {
 	
-	public void deleteAccount(T dto) throws ExceptionNotAuthorizedError;
+	public DtoBlogRole getUserRole(T dto);
 	
-	public void changedUserRoleStatus(T dto) throws ExceptionNotAuthorizedError;
+	public boolean deleteAccount(T dto) throws ExceptionNotAuthorizedError;
 	
-	public void changedUserActiveStatus(T dto) throws ExceptionNotAuthorizedError;
+	public boolean changedUserRoleStatus(T dto) throws ExceptionNotAuthorizedError;
 	
-	public void addNewRole(T dto) throws ExceptionNotAuthorizedError;
+	public boolean changedUserActiveStatus(T dto) throws ExceptionNotAuthorizedError;
 	
 	public Map<String, Integer> countOfRecordByRoles() throws ExceptionNotAuthorizedError;
 	

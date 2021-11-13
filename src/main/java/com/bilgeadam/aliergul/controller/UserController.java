@@ -24,25 +24,25 @@ public enum UserController implements IUserOperations<DtoUserDetails> {
 	
 	@Override
 	public boolean logIn(DtoUserDetails dto) throws ExceptionIncorrectPasswordBlockedStatus {
-		// TODO Auto-generated method stub
+		
 		return dao.logIn(dto);
 	}
 	
 	@Override
 	public boolean updateUser(DtoUserDetails dto) {
-		// TODO Auto-generated method stub
+		
 		return dao.updateUser(dto);
 	}
 	
 	@Override
 	public DtoUserDetails getUserDetails(DtoUserDetails dto) {
-		// TODO Auto-generated method stub
+		
 		return dao.getUserDetails(dto);
 	}
 	
 	@Override
 	public List<DtoUserDetails> getFindUser(DtoUserDetails dto) {
-		// TODO Auto-generated method stub
+		
 		return dao.getFindUser(dto);
 	}
 	

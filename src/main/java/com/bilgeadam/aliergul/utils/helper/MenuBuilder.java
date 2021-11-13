@@ -130,7 +130,7 @@ public class MenuBuilder {
 		int length = msg.length() + 4;
 		String row = icon + " ";
 		if (lineCount > length) {
-			row = String.format("%-" + Math.abs(Math.ceil((lineCount - length) / 2)) + "s", " ");
+			row += String.format("%-" + Math.abs(Math.ceil((lineCount - length) / 2)) + "s", " ");
 			
 		}
 		row = row.concat(msg);
