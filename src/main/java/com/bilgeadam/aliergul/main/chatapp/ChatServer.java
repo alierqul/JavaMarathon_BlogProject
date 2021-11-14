@@ -55,8 +55,7 @@ public enum ChatServer {
 			Socket socket = sServer.accept();
 			newMessageConroleLoop.start();
 			new MenuBuilder.Builder().title(language.getString("Globalization.CHAT_APP_MENU"))
-					.body(user.getName() + " " + language.getString("Globalization.CHATAPP_JOIN")).lineCount(50).build()
-					.show();
+					.body(user.getName() + " " + language.getString("Globalization.CHATAPP_JOIN")).build().show();
 			inComingMessage(socket);
 		} catch (IOException e) {
 			System.err.println("Server Başlatılamadı.");

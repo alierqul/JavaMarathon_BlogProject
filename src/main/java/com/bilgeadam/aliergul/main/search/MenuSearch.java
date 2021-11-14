@@ -29,8 +29,7 @@ public class MenuSearch {
 		this.language = MenuLanguage.getInstance().getLanguage();
 		MenuBuilder filterMenu = null;
 		String searchWord = language.getString("Globalization.TO_SEARCH_WORD");
-		new MenuBuilder.Builder().title(language.getString("Globalization.SEARCH")).body(searchWord).lineCount(30)
-				.build().show();
+		new MenuBuilder.Builder().title(language.getString("Globalization.SEARCH")).body(searchWord).build().show();
 		
 		String findQuery = ConsoleHelper.getInstance(language).readString(searchWord + " : ");
 		DtoUserDetails dto = new DtoUserDetails();
@@ -49,10 +48,9 @@ public class MenuSearch {
 			int choose = filterMenu.show().readInteger();
 			return tempList.get(choose);
 		} else {
-			filterMenu = new MenuBuilder.Builder()
-					.title(language.getString("Globalization.SEARCH_NOT_FOUND") + "\n" + searchWord + ":" + findQuery)
-					.build().show();
-			
+			filterMenu = new MenuBuilder.Builder().title(language.getString("Globalization.SEARCH_NOT_FOUND"))
+					.body(searchWord + " : " + findQuery).build().show();
+			filterMenu.readInteger();
 		}
 		
 		return null;

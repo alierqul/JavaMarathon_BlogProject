@@ -9,12 +9,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.bilgeadam.aliergul.dto.DtoUserDetails;
 import com.bilgeadam.aliergul.utils.exceptions.ExceptionDeletedAccount;
 import com.bilgeadam.aliergul.utils.exceptions.ExceptionIncorrectPasswordBlockedStatus;
 
 public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
+	private DtoUserDetails myUser = null;
 	
 	private int getNewUserID() {
 		try (Connection conn = getInterfaceConnection()) {
@@ -134,6 +136,7 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 					addLogHistoy(dto.getEmail(), isSuccessful, "logIn");
 					throw new ExceptionIncorrectPasswordBlockedStatus("Globalization.BLOKE_USER_PASSWORD");
 				} else {
+					this.myUser = getUserDetails(dto);
 					isSuccessful = true;
 				}
 				
@@ -185,7 +188,7 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 	public DtoUserDetails getUserDetails(DtoUserDetails dto) {
 		final String query = "SELECT  u.user_id, u.user_email, u.user_password, u.user_is_active, u.user_meta_data,"
 				+ " d.user_name,d.user_surname, d.user_phone,d.user_hescode, d.user_role_id, d.user_created_date"
-				+ " FROM public.users_detail AS d JOIN public.blog_users AS u ON u.user_id = d.user_id WHERE u.user_email=?;";
+				+ " FROM public.users_detail AS d JOIN public.blog_users AS u ON u.user_id = d.user_id WHERE u.user_email=? AND u.user_is_deleted=false;";
 		List<DtoUserDetails> tempList = getFindQueryUser(query, dto.getEmail());
 		return tempList.size() > 0 ? tempList.get(0) : null;
 	}
@@ -194,8 +197,14 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 	public List<DtoUserDetails> getFindUser(DtoUserDetails dto) {
 		final String query = "SELECT  u.user_id, u.user_email, u.user_password, u.user_is_active, u.user_meta_data,"
 				+ " d.user_name,d.user_surname, d.user_phone,d.user_hescode, d.user_role_id, d.user_created_date"
-				+ " FROM public.users_detail AS d JOIN public.blog_users AS u ON u.user_id = d.user_id WHERE u.user_meta_data LIKE ?;";
-		return getFindQueryUser(query, dto.getMetaData());
+				+ " FROM public.users_detail AS d JOIN public.blog_users AS u ON u.user_id = d.user_id WHERE u.user_meta_data LIKE ? AND u.user_is_deleted=false ;";
+		List<DtoUserDetails> temp = getFindQueryUser(query, dto.getMetaData());
+		int index = temp.stream().map(u -> u.getId()).collect(Collectors.toList()).indexOf(myUser.getId());
+		if (index >= 0) {
+			// Arama sonucundan kendini çıkarıyoruz.
+			temp.remove(index);
+		}
+		return temp;
 	}
 	
 	private List<DtoUserDetails> getFindQueryUser(String query, String findString) {

@@ -49,7 +49,8 @@ public class UserPanel {
 					break;
 				case 3:
 					DtoUserDetails friend = MenuSearch.getInstance().viewProfileSearch();
-					MenuChatApp.getInstance().viewNewMEssage(uDetails, friend);
+					if (friend != null)
+						MenuChatApp.getInstance().viewNewMEssage(uDetails, friend);
 					
 					break;
 				case 4:

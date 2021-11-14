@@ -12,7 +12,7 @@ public class MenuBuilder {
 	private String title = "";
 	private String body = "";
 	private String selectMessage = "";
-	private int lineCount = 0;
+	private int lineCount = 40;
 	private Map<Object, String> menu;
 	private char icon = '▒';// Alt + 176 = ░ Alt + 177 = ▒ Alt + 178 = ▓
 	private Scanner in = null;
@@ -124,7 +124,9 @@ public class MenuBuilder {
 		int length = msg.length() + 4;
 		String row = icon + " ";
 		if (lineCount > length) {
-			row += String.format("%-" + Math.abs(Math.ceil((lineCount - length) / 2)) + "s", " ");
+			int space = (int) Math.abs(Math.ceil((lineCount - length) / 2));
+			space = space == 0 ? 1 : space;
+			row += String.format("%-" + space + "s", " ");
 			
 		}
 		row = row.concat(msg);
@@ -174,7 +176,7 @@ public class MenuBuilder {
 		private String title = "";
 		private String body = "";
 		private String selectMessage = "";
-		private int lineCount = 0;
+		private int lineCount = 40;
 		private Map<Object, String> menu = null;
 		private char icon = '▒';
 		
