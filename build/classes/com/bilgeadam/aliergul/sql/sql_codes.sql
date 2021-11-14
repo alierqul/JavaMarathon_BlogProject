@@ -5,7 +5,7 @@ BEGIN;
 
 CREATE TABLE IF NOT EXISTS public.blog_inbox
 (
-    inbox_id integer NOT NULL,
+    inbox_id serial NOT NULL,
     user_id integer NOT NULL,
     message_id integer NOT NULL,
     inbox_message text,
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS public.blog_inbox
 
 CREATE TABLE IF NOT EXISTS public.blog_rollers
 (
-    role_id integer NOT NULL,
+    role_id serial NOT NULL,
     role_name character varying,
     user_change_active boolean DEFAULT FALSE,
     view_number_of_record boolean DEFAULT FALSE,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS public.blog_rollers
 
 CREATE TABLE IF NOT EXISTS public.blog_users
 (
-    user_id integer NOT NULL,
+    user_id serial NOT NULL,
     user_email character varying NOT NULL,
     user_password character varying NOT NULL,
     user_is_active boolean DEFAULT TRUE,
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS public.blog_users
 
 CREATE TABLE IF NOT EXISTS public.login_log_history
 (
-    log_id integer NOT NULL,
+    log_id serial NOT NULL,
     log_user_id integer NOT NULL,
     log_login_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     log_is_successful boolean,
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS public.login_log_history
 
 CREATE TABLE IF NOT EXISTS public.users_detail
 (
-    user_id integer NOT NULL,
+    user_id serial NOT NULL,
     user_name character varying,
     user_surname character varying,
     user_phone character varying,
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS public.users_detail
 
 CREATE TABLE IF NOT EXISTS public.users_of_number_record
 (
-    record_id integer NOT NULL,
+    record_id serial NOT NULL,
     role_id integer,
     role_count integer,
     PRIMARY KEY (record_id)
@@ -188,27 +188,27 @@ EXECUTE PROCEDURE bad_entry_trigger_in_registry_history();
 -- kayıt ekleme
 -- rolee tanımlama
 INSERT INTO public.blog_rollers(
-	role_id, role_name, user_change_active, view_number_of_record, user_delete_account, user_change_role, add_new_role, created_date)
-	VALUES (1, 'admin', true true, true, true, true, true);
+	role_id, role_name, user_change_active, view_number_of_record,user_delete_account, user_change_role, add_new_role)
+	VALUES (1, 'admin', true, true, true, true, true);
 INSERT INTO public.blog_rollers(
-	role_id, role_name, user_change_active, view_number_of_record, user_delete_account, user_change_role, add_new_role, created_date)
-	VALUES (3, 'user', false false, false, false, false, false);
+	role_id, role_name, user_change_active, view_number_of_record,user_delete_account, user_change_role, add_new_role)
+	VALUES (3, 'user', false, false, false, false, false);
 -- login giriş bilgileri tanımlama	
 INSERT INTO public.blog_users(
-	 user_email, user_password, user_is_active, user_meta_data, user_is_deleted)
-	VALUES ( 'admin', '91939f99bqand5d7a3c9aa8eaac08ve3', true, 'admin', false);
+	 user_id,user_email, user_password, user_is_active, user_meta_data, user_is_deleted)
+	VALUES (1, 'admin', '91939f99bqand5d7a3c9aa8eaac08ve3', true, 'admin', false);
 
 INSERT INTO public.blog_users(
-	user_email, user_password, user_is_active, user_meta_data, user_is_deleted)
-	VALUES ('user', 'fe8hebdhcgaif48b87dae0ea868c93fe', true, 'user', false);
+	user_id,user_email, user_password, user_is_active, user_meta_data, user_is_deleted)
+	VALUES (2,'user', 'fe8hebdhcgaif48b87dae0ea868c93fe', true, 'user', false);
 
 	
 
 INSERT INTO public.users_detail(
 	user_id, user_name, user_surname, user_phone, user_hescode, user_role_id)
-	VALUES (1, 'admin', '', '', '', 1);
+	VALUES (1, 'admin', ' ', ' ', ' ', 1);
 INSERT INTO public.users_detail(
 	user_id, user_name, user_surname, user_phone, user_hescode, user_role_id)
-	VALUES (2, 'user', '', '', '', 3);
+	VALUES (2, 'user', ' ', ' ', ' ', 3);
 	
 END;
