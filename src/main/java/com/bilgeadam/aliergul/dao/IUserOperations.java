@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.util.List;
 
 import com.bilgeadam.aliergul.utils.database.DatabaseConnection;
+import com.bilgeadam.aliergul.utils.exceptions.ExceptionDeletedAccount;
 import com.bilgeadam.aliergul.utils.exceptions.ExceptionIncorrectPasswordBlockedStatus;
 
 public interface IUserOperations<T> {
@@ -11,7 +12,7 @@ public interface IUserOperations<T> {
 	// database de DML Yapısı
 	public boolean createAccount(T dto);
 	
-	public boolean logIn(T dto) throws ExceptionIncorrectPasswordBlockedStatus;
+	public boolean logIn(T dto) throws ExceptionIncorrectPasswordBlockedStatus, ExceptionDeletedAccount;
 	
 	public boolean updateUser(T dto);
 	

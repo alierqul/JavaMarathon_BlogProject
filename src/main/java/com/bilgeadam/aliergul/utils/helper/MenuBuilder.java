@@ -40,6 +40,10 @@ public class MenuBuilder {
 		if (menu != null)
 			showMenu();
 		printLine(lineCount);
+		if (!selectMessage.isEmpty()) {
+			centerWrite(toPascalCaseString(selectMessage));
+			printLine(lineCount);
+		}
 		
 		return this;
 	}
@@ -49,10 +53,7 @@ public class MenuBuilder {
 		String secim;
 		
 		do {
-			if (!selectMessage.isEmpty()) {
-				centerWrite(toPascalCaseString(selectMessage));
-				printLine(lineCount);
-			}
+			
 			boolean isDigit = true;
 			secim = in.next().trim();
 			for (int i = 0; i < secim.length(); i++) {
@@ -71,10 +72,7 @@ public class MenuBuilder {
 		String strLine = "";
 		do {
 			try {
-				if (!selectMessage.isEmpty()) {
-					centerWrite(toPascalCaseString(selectMessage));
-					printLine(lineCount);
-				}
+				
 				strLine = in.next();
 				return strLine;
 			} catch (Exception e) {

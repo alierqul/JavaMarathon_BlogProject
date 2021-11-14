@@ -4,6 +4,7 @@ import com.bilgeadam.aliergul.controller.UserController;
 import com.bilgeadam.aliergul.dto.DtoUserDetails;
 import com.bilgeadam.aliergul.main.language.MenuLanguage;
 import com.bilgeadam.aliergul.main.user.UserPanel;
+import com.bilgeadam.aliergul.utils.exceptions.ExceptionDeletedAccount;
 import com.bilgeadam.aliergul.utils.exceptions.ExceptionIncorrectPasswordBlockedStatus;
 import com.bilgeadam.aliergul.utils.helper.ConsoleHelper;
 import com.bilgeadam.aliergul.utils.helper.MenuBuilder;
@@ -76,10 +77,10 @@ public class MainActivity {
 				UserPanel.getInstance().mainUserPanel(user);
 			} else {
 				SharedPreferencesHelper.getInstance.writeToFile(new DtoUserDetails());
-				System.out.println(language.getString("Globalization.ERROR_NEW_ACCOUNT"));
+				ConsoleHelper.getInstance(language).readInteger(language.getString("Globalization.ERROR_NEW_ACCOUNT"));
 			}
-		} catch (ExceptionIncorrectPasswordBlockedStatus e) {
-			System.out.println(language.getString(e.getMessage()));
+		} catch (ExceptionIncorrectPasswordBlockedStatus | ExceptionDeletedAccount e) {
+			ConsoleHelper.getInstance(language).readInteger(language.getString(e.getMessage()));
 		}
 	}
 	

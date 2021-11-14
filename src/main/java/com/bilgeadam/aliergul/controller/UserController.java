@@ -5,6 +5,7 @@ import java.util.List;
 import com.bilgeadam.aliergul.dao.DaoUserDetails;
 import com.bilgeadam.aliergul.dao.IUserOperations;
 import com.bilgeadam.aliergul.dto.DtoUserDetails;
+import com.bilgeadam.aliergul.utils.exceptions.ExceptionDeletedAccount;
 import com.bilgeadam.aliergul.utils.exceptions.ExceptionIncorrectPasswordBlockedStatus;
 
 public enum UserController implements IUserOperations<DtoUserDetails> {
@@ -23,7 +24,7 @@ public enum UserController implements IUserOperations<DtoUserDetails> {
 	}
 	
 	@Override
-	public boolean logIn(DtoUserDetails dto) throws ExceptionIncorrectPasswordBlockedStatus {
+	public boolean logIn(DtoUserDetails dto) throws ExceptionIncorrectPasswordBlockedStatus, ExceptionDeletedAccount {
 		
 		return dao.logIn(dto);
 	}

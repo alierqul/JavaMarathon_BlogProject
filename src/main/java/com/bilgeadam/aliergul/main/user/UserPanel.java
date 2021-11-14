@@ -3,6 +3,7 @@ package com.bilgeadam.aliergul.main.user;
 import com.bilgeadam.aliergul.controller.UserController;
 import com.bilgeadam.aliergul.dto.DtoUserDetails;
 import com.bilgeadam.aliergul.main.admin.AdminPanel;
+import com.bilgeadam.aliergul.main.chatapp.MenuChatApp;
 import com.bilgeadam.aliergul.main.inbox.MenuInbox;
 import com.bilgeadam.aliergul.main.language.MenuLanguage;
 import com.bilgeadam.aliergul.main.profile.MenuProfile;
@@ -47,7 +48,8 @@ public class UserPanel {
 					MenuInbox.getInstance().viewInbox(uDetails);
 					break;
 				case 3:
-					MenuSearch.getInstance().viewProfileSearch();
+					DtoUserDetails friend = MenuSearch.getInstance().viewProfileSearch();
+					MenuChatApp.getInstance().viewNewMEssage(uDetails, friend);
 					
 					break;
 				case 4:
@@ -70,6 +72,7 @@ public class UserPanel {
 	
 	private MenuBuilder userMenuBuild() {
 		MenuBuilder menu = new MenuBuilder.Builder().title(language.getString("Globalization.USER_PANEL"))
+				.body(uDetails.getName() + " " + uDetails.getSurName())
 				.addMenu(1, language.getString("Globalization.SHOW_PROFILE"))
 				.addMenu(2, language.getString("Globalization.INBOX"))
 				.addMenu(3, language.getString("Globalization.SEARCH"))

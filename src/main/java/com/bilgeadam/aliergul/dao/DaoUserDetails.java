@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bilgeadam.aliergul.dto.DtoUserDetails;
+import com.bilgeadam.aliergul.utils.exceptions.ExceptionDeletedAccount;
 import com.bilgeadam.aliergul.utils.exceptions.ExceptionIncorrectPasswordBlockedStatus;
 
 public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
@@ -29,15 +30,16 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 		return -1;
 	}
 	
-	private void addLogHistoy(String email, boolean isuccessful) {
+	private void addLogHistoy(String email, boolean isuccessful, String comment) {
 		int userID = getEmailtoUserId(email);
 		if (userID != -1) {
 			try (Connection conn = getInterfaceConnection()) {
-				final String query = "INSERT INTO public.login_log_history(log_user_id, log_is_successful)VALUES (  ?, ?);";
+				final String query = "INSERT INTO public.login_log_history(log_user_id, log_is_successful, log_comment)VALUES (?,?,?);";
 				PreparedStatement pre = conn.prepareStatement(query);
 				
 				pre.setInt(1, userID);
 				pre.setBoolean(2, isuccessful);
+				pre.setString(3, comment);
 				pre.executeUpdate();
 				
 			} catch (SQLException e) {
@@ -84,6 +86,7 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 				preparedStatement.setString(4, dto.getPhone());
 				preparedStatement.setString(5, dto.getHescode());
 				preparedStatement.executeUpdate();
+				addLogHistoy(dto.getEmail(), true, "createAccount");
 				return true;
 			}
 			
@@ -114,9 +117,9 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 	}
 	
 	@Override
-	public boolean logIn(DtoUserDetails dto) throws ExceptionIncorrectPasswordBlockedStatus {
+	public boolean logIn(DtoUserDetails dto) throws ExceptionIncorrectPasswordBlockedStatus, ExceptionDeletedAccount {
 		boolean isSuccessful = false;
-		final String queryUser = "SELECT u.user_is_active FROM public.blog_users as u where u.user_email=? AND u.user_password=?;";
+		final String queryUser = "SELECT u.user_is_active, u.user_is_deleted FROM public.blog_users as u where u.user_email=? AND u.user_password=?;";
 		try (Connection conn = getInterfaceConnection()) {
 			PreparedStatement preparedStatement = conn.prepareStatement(queryUser);
 			preparedStatement.setString(1, dto.getEmail());
@@ -124,15 +127,18 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 			ResultSet result = preparedStatement.executeQuery();
 			
 			while (result.next()) {
-				if (!result.getBoolean(1)) {
-					addLogHistoy(dto.getEmail(), isSuccessful);
+				if (result.getBoolean(2)) {
+					addLogHistoy(dto.getEmail(), isSuccessful, "logIn");
+					throw new ExceptionDeletedAccount("Globalization.DELETE_ACCOUNT");
+				} else if (!result.getBoolean(1)) {
+					addLogHistoy(dto.getEmail(), isSuccessful, "logIn");
 					throw new ExceptionIncorrectPasswordBlockedStatus("Globalization.BLOKE_USER_PASSWORD");
 				} else {
 					isSuccessful = true;
 				}
 				
 			}
-			addLogHistoy(dto.getEmail(), isSuccessful);
+			addLogHistoy(dto.getEmail(), isSuccessful, "logIn");
 			
 		} catch (SQLException e) {
 			System.out.println("HATA - insert(UserDto): " + e.getMessage());

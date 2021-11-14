@@ -8,7 +8,6 @@ import com.bilgeadam.aliergul.dto.DtoMessage;
 import com.bilgeadam.aliergul.dto.DtoUserDetails;
 import com.bilgeadam.aliergul.main.language.MenuLanguage;
 import com.bilgeadam.aliergul.utils.helper.ConsoleHelper;
-import com.bilgeadam.aliergul.utils.helper.MenuBuilder;
 import com.bilgeadam.aliergul.utils.language.GlobalStrings;
 
 public enum ChatClient {
@@ -21,14 +20,14 @@ public enum ChatClient {
 		PortInfo port = new PortInfo();
 		try (ObjectOutputStream objOut = new ObjectOutputStream(
 				(new Socket(port.getIdAdress(), port.getPort())).getOutputStream())) {
-			new MenuBuilder.Builder().title(language.getString("Globalization.CHAT_APP_MENU"))
-					.body(language.getString("Globalization.CHATAPP_JOIN")).lineCount(50).build().show();
 			
 			while (true) {
-				
 				String msg = ConsoleHelper.getInstance(language).readString(user.getName() + ": ");
 				DtoMessage msjSend = new DtoMessage(user.getId(), friend.getId(), msg);
 				objOut.writeObject(msjSend);
+				if (msg.equals("0")) {
+					break;
+				}
 				
 			}
 			

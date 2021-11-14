@@ -24,6 +24,25 @@ public enum ChatServer {
 	private List<DtoMessage> listMessageHistory;
 	private GlobalStrings language = MenuLanguage.getInstance().getLanguage();
 	
+	private Thread newMessageConroleLoop = new Thread() {
+		
+		public void run() {
+			while (true) {
+				if (listMessageHistory.size() != iControleer.getListMessage(user, friend).size()) {
+					listMessageHistory = iControleer.getListMessage(user, friend);
+					historyMessageBuilder(listMessageHistory).show();
+					System.out.print("[ " + user.getName() + "] : ");
+				}
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					
+				}
+			}
+			
+		}
+	};
+	
 	public void startServer(DtoUserDetails user, DtoUserDetails friend) {
 		
 		this.listMessageHistory = new ArrayList<>();
@@ -34,36 +53,15 @@ public enum ChatServer {
 		
 		try (ServerSocket sServer = new ServerSocket(port.getPort())) {
 			Socket socket = sServer.accept();
-			newMessageConroleLoop();
-			new MenuBuilder.Builder().title(language.getString("Globalization.CHAT_APP_MENU")).lineCount(50).build()
+			newMessageConroleLoop.start();
+			new MenuBuilder.Builder().title(language.getString("Globalization.CHAT_APP_MENU"))
+					.body(user.getName() + " " + language.getString("Globalization.CHATAPP_JOIN")).lineCount(50).build()
 					.show();
 			inComingMessage(socket);
 		} catch (IOException e) {
 			System.err.println("Server Başlatılamadı.");
 			
 		}
-	}
-	
-	void newMessageConroleLoop() {
-		
-		Thread newMessageControlLoop = new Thread() {
-			public void run() {
-				while (true) {
-					if (listMessageHistory.size() != iControleer.getListMessage(user, friend).size()) {
-						listMessageHistory = iControleer.getListMessage(user, friend);
-						historyMessageBuilder(listMessageHistory).show();
-						System.out.print("[ " + user.getName() + "] : ");
-					}
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						
-					}
-				}
-				
-			}
-		};
-		newMessageControlLoop.start();
 	}
 	
 	private void inComingMessage(Socket socket) {
@@ -75,7 +73,13 @@ public enum ChatServer {
 					
 					if ((receivedMessage = objectReader.readObject()) instanceof DtoMessage) {
 						DtoMessage msj = (DtoMessage) receivedMessage;
-						iControleer.appendMessageDatabase(msj);
+						if (msj.getMessage().equals("0")) {
+							socket.close();
+							newMessageConroleLoop.stop();
+							break;
+						} else {
+							iControleer.appendMessageDatabase(msj);
+						}
 						
 					}
 					
@@ -92,9 +96,6 @@ public enum ChatServer {
 	}
 	
 	private MenuBuilder historyMessageBuilder(List<DtoMessage> listMessage) {
-		int userlength = (user.getName() + user.getSurName()).length();
-		int friendlength = (friend.getName() + friend.getSurName()).length();
-		int count = (userlength > friendlength) ? userlength : friendlength;
 		System.out.println();
 		MenuBuilder histortyMessage = new MenuBuilder.Builder().title(friend.getName() + " " + friend.getSurName())
 				.selectMessage(language.getString("Globalization.EXIT")).build();

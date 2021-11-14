@@ -111,6 +111,7 @@ public class AdminPanel {
 			if (findUser != null && chooseBooleanYesNo(language.getString("Globalization.ADMIN_DELETED_ACCOUNT"),
 					language.getString("Globalization.ADMIN_DELETED_CONFIRM"), findUser)) {
 				try {
+					
 					adminController.deleteAccount(findUser);
 				} catch (ExceptionNotAuthorizedError e) {
 					System.err.println(language.getString(e.getMessage()));
@@ -149,6 +150,7 @@ public class AdminPanel {
 			if (findUser != null && chooseBooleanYesNo(language.getString("Globalization.ADMIN_PASSWORD_UNBLOKING"),
 					language.getString("Globalization.ADMIN_UNBLOKING_PASS"), findUser)) {
 				try {
+					findUser.setActive(true);
 					adminController.changedUserActiveStatus(findUser);
 				} catch (ExceptionNotAuthorizedError e) {
 					System.err.println(language.getString(e.getMessage()));
