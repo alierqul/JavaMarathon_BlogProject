@@ -28,12 +28,16 @@ public class DatabaseConnection {
 		
 		try {
 			if (conn == null || conn.isClosed()) {
+				try {
+					Class.forName(info.getFOR_NAME_DATA());
+				} catch (ClassNotFoundException e) {
+					System.out.println("HATA: ClassNotFoundException: " + e.getMessage());
+				}
 				
-				Class.forName(info.getFOR_NAME_DATA());
 				this.conn = DriverManager.getConnection(info.getURL(), info.getUSER_NAME(), info.getPASSWORD());
 				System.out.println("LOG: " + tag + ": " + conn.isClosed());
 			}
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException e) {
 			System.out.println("HATA: getConn: " + e.getMessage());
 		}
 		return this.conn;
