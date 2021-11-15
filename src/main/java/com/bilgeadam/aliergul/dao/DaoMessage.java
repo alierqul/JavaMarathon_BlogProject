@@ -17,7 +17,7 @@ public class DaoMessage implements IMessageOperations {
 	public boolean appendMessageDatabase(DtoMessage msg) {
 		final String queryUser = "INSERT INTO public.blog_inbox(user_id, message_id, inbox_message) VALUES (?, ?, ?);";
 		
-		try (Connection conn = getInterfaceConnection()) {
+		try (Connection conn = getInterfaceConnection("appendMessageDatabase")) {
 			PreparedStatement preparedStatement = conn.prepareStatement(queryUser);
 			preparedStatement.setInt(1, msg.getUserId());
 			preparedStatement.setInt(2, msg.getMessageId());
@@ -37,7 +37,7 @@ public class DaoMessage implements IMessageOperations {
 				+ " FROM public.blog_inbox as i INNER JOIN public.blog_users as u ON u.user_id = i.user_id"
 				+ " INNER JOIN public.users_detail as d ON d.user_id = u.user_id WHERE ((i.user_id=? or i.message_id=?) and (i.user_id=? or i.message_id=?));";
 		List<DtoMessage> temp = new ArrayList<>();
-		try (Connection conn = getInterfaceConnection()) {
+		try (Connection conn = getInterfaceConnection("getListMessage")) {
 			PreparedStatement preparedStatement = conn.prepareStatement(queryUser);
 			preparedStatement.setInt(1, user.getId());
 			preparedStatement.setInt(2, user.getId());
@@ -69,7 +69,7 @@ public class DaoMessage implements IMessageOperations {
 				+ " INNER JOIN public.blog_users as u ON u.user_id = i.message_id"
 				+ " INNER JOIN public.users_detail as d ON d.user_id = u.user_id WHERE i.user_id=?;";
 		List<DtoUserDetails> temp = new ArrayList<>();
-		try (Connection conn = getInterfaceConnection()) {
+		try (Connection conn = getInterfaceConnection("getListUserMessage")) {
 			PreparedStatement preparedStatement = conn.prepareStatement(queryUser);
 			preparedStatement.setInt(1, user.getId());
 			

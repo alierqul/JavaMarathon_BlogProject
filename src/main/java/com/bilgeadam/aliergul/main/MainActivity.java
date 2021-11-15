@@ -80,6 +80,7 @@ public class MainActivity {
 				ConsoleHelper.getInstance(language).readInteger(language.getString("Globalization.ERROR_NEW_ACCOUNT"));
 			}
 		} catch (ExceptionIncorrectPasswordBlockedStatus | ExceptionDeletedAccount e) {
+			SharedPreferencesHelper.getInstance.writeToFile(new DtoUserDetails());
 			ConsoleHelper.getInstance(language).readInteger(language.getString(e.getMessage()));
 		}
 	}
@@ -95,14 +96,18 @@ public class MainActivity {
 	
 	public DtoUserDetails scanNewAccountInformation() {
 		
-		String name = ConsoleHelper.getInstance(language).readString(language.getString("Globalization.SCAN_NAME"));
+		String name = ConsoleHelper.getInstance(language)
+				.readString(language.getString("Globalization.SCAN_NAME") + ":");
 		String surname = ConsoleHelper.getInstance(language)
-				.readString(language.getString("Globalization.SCAN_SURNAME"));
-		String phone = ConsoleHelper.getInstance(language).readString(language.getString("Globalization.SCAN_PHONE"));
-		String email = ConsoleHelper.getInstance(language).readString(language.getString("Globalization.SCAN_EMAIL"))
-				.trim().toLowerCase();
-		String password = ConsoleHelper.getInstance(language).readString(language.getString("Globalization.PASSWORD"));
-		String hescode = ConsoleHelper.getInstance(language).readString(language.getString("Globalization.HESCODE"));
+				.readString(language.getString("Globalization.SCAN_SURNAME") + ":");
+		String phone = ConsoleHelper.getInstance(language)
+				.readString(language.getString("Globalization.SCAN_PHONE") + ":");
+		String email = ConsoleHelper.getInstance(language)
+				.readString(language.getString("Globalization.SCAN_EMAIL") + ":").trim().toLowerCase();
+		String password = ConsoleHelper.getInstance(language)
+				.readString(language.getString("Globalization.SCAN_PASSWORD") + ":");
+		String hescode = ConsoleHelper.getInstance(language)
+				.readString(language.getString("Globalization.SCAN_HESCODE") + ":");
 		return new DtoUserDetails(email, password, name, surname, phone, hescode);
 	}
 	

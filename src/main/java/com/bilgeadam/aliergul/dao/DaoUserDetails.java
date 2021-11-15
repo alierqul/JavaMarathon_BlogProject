@@ -18,24 +18,10 @@ import com.bilgeadam.aliergul.utils.exceptions.ExceptionIncorrectPasswordBlocked
 public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 	private DtoUserDetails myUser = null;
 	
-	private int getNewUserID() {
-		try (Connection conn = getInterfaceConnection()) {
-			final String query = "SELECT MAX(user_id) FROM public.blog_users;";
-			ResultSet result = conn.prepareStatement(query).executeQuery();
-			while (result.next()) {
-				return result.getInt(1);
-			}
-			
-		} catch (SQLException e) {
-			System.out.println("HATA - getNewUserID: " + e.getMessage());
-		}
-		return -1;
-	}
-	
 	private void addLogHistoy(String email, boolean isuccessful, String comment) {
 		int userID = getEmailtoUserId(email);
 		if (userID != -1) {
-			try (Connection conn = getInterfaceConnection()) {
+			try (Connection conn = getInterfaceConnection("addLogHistoy")) {
 				final String query = "INSERT INTO public.login_log_history(log_user_id, log_is_successful, log_comment)VALUES (?,?,?);";
 				PreparedStatement pre = conn.prepareStatement(query);
 				
@@ -54,8 +40,8 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 	
 	private int getEmailtoUserId(String email) {
 		int id = -1;
-		try (Connection conn = getInterfaceConnection()) {
-			
+		try (Connection conn = getInterfaceConnection("getEmailtoUserId")) {
+			conn.isClosed();
 			final String query = "SELECT user_id FROM public.blog_users where user_email=?;";
 			PreparedStatement pre = conn.prepareStatement(query);
 			pre.setString(1, email);
@@ -72,31 +58,29 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 	
 	@Override
 	public boolean createAccount(DtoUserDetails dto) {
-		final String queryUser = "INSERT INTO public.blog_users( user_email, user_password ,user_meta_data) "
-				+ "VALUES (?, ?, ?);";
-		final String queryDetails = "INSERT INTO public.users_detail(user_id,user_name, user_surname, user_phone, user_hescode, user_role_id)	VALUES ( ?,?, ?, ?, ?, 3);";
-		try (Connection conn = getInterfaceConnection()) {
-			PreparedStatement preparedStatement = conn.prepareStatement(queryUser);
-			preparedStatement.setString(1, dto.getEmail().toLowerCase());
-			preparedStatement.setString(2, convertMD5(dto.getPasswod()));
-			preparedStatement.setString(3, dto.getMetaData().toLowerCase());
-			if (preparedStatement.execute()) {
-				preparedStatement = conn.prepareStatement(queryDetails);
-				preparedStatement.setInt(1, getNewUserID());
-				preparedStatement.setString(2, dto.getName());
-				preparedStatement.setString(3, dto.getSurName());
-				preparedStatement.setString(4, dto.getPhone());
-				preparedStatement.setString(5, dto.getHescode());
-				preparedStatement.executeUpdate();
-				addLogHistoy(dto.getEmail(), true, "createAccount");
-				return true;
-			}
+		// "call registerNewAccount('email','pass','meta','d','d','d','d',2);";
+		final String queryUser = "call registerNewAccount(?,?,?,?,?,?,?,?);";
+		final int USER_ROLE = 2;
+		try (Connection conn = getInterfaceConnection("createAccount")) {
+			PreparedStatement createUser = conn.prepareStatement(queryUser);
+			createUser.setString(1, dto.getEmail().toLowerCase());
+			createUser.setString(2, convertMD5(dto.getPasswod()));
+			createUser.setString(3, createMetaData(dto).toLowerCase());
+			createUser.setString(4, dto.getName());
+			createUser.setString(5, dto.getSurName());
+			createUser.setString(6, dto.getPhone());
+			createUser.setString(7, dto.getHescode());
+			createUser.setInt(8, USER_ROLE);
+			int result = createUser.executeUpdate();
+			addLogHistoy(dto.getEmail(), true, "createAccount");
+			System.out.println("createAccount = " + result);
+			return true;
 			
 		} catch (SQLException e) {
 			System.out.println("HATA - insert(UserDto): " + e.getMessage());
 			return false;
 		}
-		return false;
+		
 	}
 	
 	private String convertMD5(String parola) {
@@ -122,7 +106,7 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 	public boolean logIn(DtoUserDetails dto) throws ExceptionIncorrectPasswordBlockedStatus, ExceptionDeletedAccount {
 		boolean isSuccessful = false;
 		final String queryUser = "SELECT u.user_is_active, u.user_is_deleted FROM public.blog_users as u where u.user_email=? AND u.user_password=?;";
-		try (Connection conn = getInterfaceConnection()) {
+		try (Connection conn = getInterfaceConnection("logIn")) {
 			PreparedStatement preparedStatement = conn.prepareStatement(queryUser);
 			preparedStatement.setString(1, dto.getEmail());
 			preparedStatement.setString(2, convertMD5(dto.getPasswod()));
@@ -155,14 +139,13 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 		boolean isSuccessful = false;
 		final String queryUser = "UPDATE public.blog_users SET user_email=?, user_password=?, user_meta_data=? WHERE user_id=?; ";
 		final String queryDetails = "UPDATE public.users_detail SET user_name=?, user_surname=?, user_phone=?, user_hescode=? WHERE user_id=?";
-		try (Connection conn = getInterfaceConnection()) {
+		try (Connection conn = getInterfaceConnection("updateUser")) {
 			// blog_users
 			PreparedStatement preparedStatement = conn.prepareStatement(queryUser);
 			preparedStatement.setString(1, dto.getEmail().toLowerCase());
 			preparedStatement.setString(2, convertMD5(dto.getPasswod()));
-			String metaData = dto.getName() + dto.getSurName() + dto.getHescode()
-					+ dto.getEmail().substring(0, dto.getEmail().indexOf("@"));
-			preparedStatement.setString(3, metaData.toLowerCase());
+			
+			preparedStatement.setString(3, createMetaData(dto).toLowerCase());
 			preparedStatement.setInt(4, dto.getId());
 			int num = preparedStatement.executeUpdate();
 			// users_detail
@@ -182,6 +165,11 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 			
 		}
 		return isSuccessful;
+	}
+	
+	private String createMetaData(DtoUserDetails dto) {
+		return dto.getName() + dto.getSurName() + dto.getEmail().substring(0,
+				dto.getEmail().indexOf("@") > 0 ? dto.getEmail().indexOf("@") : dto.getEmail().length());
 	}
 	
 	@Override
@@ -210,7 +198,7 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 	private List<DtoUserDetails> getFindQueryUser(String query, String findString) {
 		List<DtoUserDetails> tempList = new ArrayList<>();
 		DtoUserDetails uDetails = null;
-		try (Connection conn = getInterfaceConnection()) {
+		try (Connection conn = getInterfaceConnection("getFindQueryUser")) {
 			PreparedStatement preparedStatement = conn.prepareStatement(query);
 			preparedStatement.setString(1, findString);
 			ResultSet result = preparedStatement.executeQuery();

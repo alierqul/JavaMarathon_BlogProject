@@ -14,7 +14,7 @@ public interface IMessageOperations {
 	
 	public List<DtoUserDetails> getListUserMessage(DtoUserDetails dto);
 	
-	default Connection getInterfaceConnection() {
-		return DatabaseConnection.getInstance().getConn();
+	default Connection getInterfaceConnection(String tag) {
+		return DatabaseConnection.getInstance().getConn("IMessageOperations/" + tag);
 	};
 }

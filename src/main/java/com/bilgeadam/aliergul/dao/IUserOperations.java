@@ -20,8 +20,8 @@ public interface IUserOperations<T> {
 	
 	public List<T> getFindUser(T dto);
 	
-	default Connection getInterfaceConnection() {
-		return DatabaseConnection.getInstance().getConn();
+	default Connection getInterfaceConnection(String tag) {
+		return DatabaseConnection.getInstance().getConn("IUserOperations/" + tag);
 	};
 	
 }

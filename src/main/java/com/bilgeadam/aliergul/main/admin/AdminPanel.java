@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.util.Map;
 
 import com.bilgeadam.aliergul.controller.AdminController;
-import com.bilgeadam.aliergul.controller.UserController;
 import com.bilgeadam.aliergul.dto.DtoUserDetails;
 import com.bilgeadam.aliergul.main.language.MenuLanguage;
 import com.bilgeadam.aliergul.main.search.MenuSearch;
@@ -17,9 +16,8 @@ public class AdminPanel {
 	private GlobalStrings language;
 	private DtoUserDetails uDetials;
 	private AdminController adminController;
-	private UserController userController = UserController.getInstance;
 	private static final int ADMIN_ROLE = 1;
-	private static final int USER_ROLE = 3;
+	private static final int USER_ROLE = 2;
 	
 	private AdminPanel() {
 		
@@ -91,6 +89,7 @@ public class AdminPanel {
 					break;
 				case 6:
 					language = MenuLanguage.getInstance().changedLanguage();
+					menu = adminMenuBuilder();
 					break;
 				case 0:
 					

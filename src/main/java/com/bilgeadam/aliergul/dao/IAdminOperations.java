@@ -22,7 +22,7 @@ public interface IAdminOperations<T> {
 	
 	public Map<String, Integer> countOfRecordByRoles() throws ExceptionNotAuthorizedError;
 	
-	default Connection getInterfaceConnection() {
-		return DatabaseConnection.getInstance().getConn();
+	default Connection getInterfaceConnection(String tag) {
+		return DatabaseConnection.getInstance().getConn("IAdminOperations/" + tag);
 	};
 }

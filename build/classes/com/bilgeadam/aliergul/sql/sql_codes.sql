@@ -185,30 +185,46 @@ ON login_log_history 	-- users_detail tablosundaki değişiklik incelensin
 FOR EACH ROW
 EXECUTE PROCEDURE bad_entry_trigger_in_registry_history();
 -- KOMUT SONU
+
+-- YENİ KAYIT EKLEME PROCEDURE
+CREATE OR REPLACE PROCEDURE registerNewAccount(reg_user_email character varying, 
+											   reg_user_password character varying, 
+											   reg_user_meta_data character varying,
+											   reg_user_name character varying, 
+											   reg_user_surname character varying, 
+											   reg_user_phone character varying, 
+											   reg_user_hescode character varying, 
+											   reg_user_role_id integer
+											  )
+LANGUAGE plpgsql
+AS
+	$$
+		DECLARE
+			lastUserID integer :=0;
+		BEGIN
+			RAISE NOTICE 'start';
+			INSERT INTO public.blog_users( user_email, user_password ,user_meta_data) 
+			VALUES ( reg_user_email, reg_user_password ,reg_user_meta_data);
+			RAISE NOTICE '1';
+			lastUserID:=(SELECT MAX(user_id) FROM public.blog_users);
+			RAISE NOTICE '2 %', lastUserID;
+			INSERT INTO public.users_detail(user_id,user_name, user_surname, user_phone, user_hescode, user_role_id) 
+			VALUES ( lastUserID,reg_user_name, reg_user_surname, reg_user_phone, reg_user_hescode,reg_user_role_id);
+			RAISE NOTICE '3';
+		END;
+	$$;
 -- kayıt ekleme
 -- rolee tanımlama
 INSERT INTO public.blog_rollers(
-	role_id, role_name, user_change_active, view_number_of_record,user_delete_account, user_change_role, add_new_role)
-	VALUES (1, 'admin', true, true, true, true, true);
+	 role_name, user_change_active, view_number_of_record,user_delete_account, user_change_role, add_new_role)
+	VALUES ( 'admin', true, true, true, true, true);
 INSERT INTO public.blog_rollers(
-	role_id, role_name, user_change_active, view_number_of_record,user_delete_account, user_change_role, add_new_role)
-	VALUES (3, 'user', false, false, false, false, false);
+	role_name, user_change_active, view_number_of_record,user_delete_account, user_change_role, add_new_role)
+	VALUES ( 'user', false, false, false, false, false);
 -- login giriş bilgileri tanımlama	
-INSERT INTO public.blog_users(
-	 user_id,user_email, user_password, user_is_active, user_meta_data, user_is_deleted)
-	VALUES (1, 'admin', '91939f99bqand5d7a3c9aa8eaac08ve3', true, 'admin', false);
 
-INSERT INTO public.blog_users(
-	user_id,user_email, user_password, user_is_active, user_meta_data, user_is_deleted)
-	VALUES (2,'user', 'fe8hebdhcgaif48b87dae0ea868c93fe', true, 'user', false);
+call registerNewAccount('admin','91939f99bqand5d7a3c9aa8eaac08ve3','admin','','','','',1);
+call registerNewAccount('user','fe8hebdhcgaif48b87dae0ea868c93fe','user','','','','',2);
 
-	
-
-INSERT INTO public.users_detail(
-	user_id, user_name, user_surname, user_phone, user_hescode, user_role_id)
-	VALUES (1, 'admin', ' ', ' ', ' ', 1);
-INSERT INTO public.users_detail(
-	user_id, user_name, user_surname, user_phone, user_hescode, user_role_id)
-	VALUES (2, 'user', ' ', ' ', ' ', 3);
 	
 END;

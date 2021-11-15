@@ -24,18 +24,19 @@ public class DatabaseConnection {
 		return instance;
 	}
 	
-	public Connection getConn() {
+	public Connection getConn(String tag) {
 		
 		try {
 			if (conn == null || conn.isClosed()) {
-				Class.forName(info.getFOR_NAME_DATA());
-				conn = DriverManager.getConnection(info.getURL(), info.getUSER_NAME(), info.getPASSWORD());
 				
+				Class.forName(info.getFOR_NAME_DATA());
+				this.conn = DriverManager.getConnection(info.getURL(), info.getUSER_NAME(), info.getPASSWORD());
+				System.out.println("LOG: " + tag + ": " + conn.isClosed());
 			}
 		} catch (SQLException | ClassNotFoundException e) {
-			System.out.println("HATA: " + e.getMessage());
+			System.out.println("HATA: getConn: " + e.getMessage());
 		}
-		return conn;
+		return this.conn;
 	}
 	
 }

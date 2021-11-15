@@ -19,7 +19,7 @@ public class DaoAdmin implements IAdminOperations<DtoUserDetails> {
 	
 	public DaoAdmin(DtoUserDetails dto) {
 		super();
-		try (Connection conn = getInterfaceConnection()) {
+		try (Connection conn = getInterfaceConnection("DaoAdmin")) {
 			final String query = "SELECT role_id, role_name, user_change_active, view_number_of_record, user_delete_account, user_change_role, add_new_role, created_date"
 					+ "	FROM public.blog_rollers WHERE role_id=?; ";
 			PreparedStatement pStatement = conn.prepareStatement(query);
@@ -47,7 +47,7 @@ public class DaoAdmin implements IAdminOperations<DtoUserDetails> {
 	public boolean deleteAccount(DtoUserDetails dto) throws ExceptionNotAuthorizedError {
 		int result = -1;
 		if (this.role.isUserDeleteAccount()) {
-			try (Connection conn = getInterfaceConnection()) {
+			try (Connection conn = getInterfaceConnection("deleteAccount")) {
 				final String query = "UPDATE public.blog_users SET user_is_deleted=? WHERE user_id=?;";
 				PreparedStatement pStatement = conn.prepareStatement(query);
 				pStatement.setBoolean(1, true);
@@ -71,7 +71,7 @@ public class DaoAdmin implements IAdminOperations<DtoUserDetails> {
 	public boolean changedUserRoleStatus(DtoUserDetails dto) throws ExceptionNotAuthorizedError {
 		int result = -1;
 		if (this.role.isUserChangeRole()) {
-			try (Connection conn = getInterfaceConnection()) {
+			try (Connection conn = getInterfaceConnection("changedUserRoleStatus")) {
 				final String query = "UPDATE public.users_detail SET user_role_id=? WHERE user_id=?;";
 				PreparedStatement pStatement = conn.prepareStatement(query);
 				pStatement.setInt(1, dto.getRoleId());
@@ -95,7 +95,7 @@ public class DaoAdmin implements IAdminOperations<DtoUserDetails> {
 	public boolean changedUserActiveStatus(DtoUserDetails dto) throws ExceptionNotAuthorizedError {
 		int result = -1;
 		if (this.role.isUserChangeActive()) {
-			try (Connection conn = getInterfaceConnection()) {
+			try (Connection conn = getInterfaceConnection("changedUserActiveStatus")) {
 				final String query = "UPDATE public.blog_users SET user_is_active=? WHERE user_id=?;";
 				PreparedStatement pStatement = conn.prepareStatement(query);
 				pStatement.setBoolean(1, dto.isActive());
@@ -119,7 +119,7 @@ public class DaoAdmin implements IAdminOperations<DtoUserDetails> {
 		Map<String, Integer> temp = new HashMap<>();
 		if (this.role.isUserDeleteAccount()) {
 			
-			try (Connection conn = getInterfaceConnection()) {
+			try (Connection conn = getInterfaceConnection("countOfRecordByRoles")) {
 				final String query = "SELECT b.role_name, r.role_count	FROM users_of_number_record AS r INNER JOIN blog_rollers AS b ON b.role_id = r.role_id";
 				PreparedStatement pStatement = conn.prepareStatement(query);
 				
@@ -149,7 +149,7 @@ public class DaoAdmin implements IAdminOperations<DtoUserDetails> {
 		Map<Date, Integer> temp = new LinkedHashMap<>();
 		if (this.role.isViewNumberOfRecord()) {
 			
-			try (Connection conn = getInterfaceConnection()) {
+			try (Connection conn = getInterfaceConnection("countOfRecordByDay")) {
 				final String query = "SELECT DATE(log_login_date)as logDate , COUNT(*) as logCount FROM public.login_log_history GROUP BY DATE(log_login_date) ORDER BY DATE(log_login_date) DESC;";
 				PreparedStatement pStatement = conn.prepareStatement(query);
 				
