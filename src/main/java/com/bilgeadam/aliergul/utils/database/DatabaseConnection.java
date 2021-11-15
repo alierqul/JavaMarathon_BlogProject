@@ -35,7 +35,7 @@ public class DatabaseConnection {
 				}
 				
 				this.conn = DriverManager.getConnection(info.getURL(), info.getUSER_NAME(), info.getPASSWORD());
-				System.out.println("LOG: " + tag + ": " + conn.isClosed());
+				// System.out.println("LOG: " + tag + ": " + conn.isClosed());
 			}
 		} catch (SQLException e) {
 			System.out.println("HATA: getConn: " + e.getMessage());
