@@ -1,6 +1,7 @@
 package com.bilgeadam.aliergul.main;
 
 import com.bilgeadam.aliergul.controller.UserController;
+import com.bilgeadam.aliergul.dao.DaoDatabase;
 import com.bilgeadam.aliergul.dto.DtoUserDetails;
 import com.bilgeadam.aliergul.main.language.MenuLanguage;
 import com.bilgeadam.aliergul.main.user.UserPanel;
@@ -15,6 +16,7 @@ public class MainActivity {
 	private GlobalStrings language;
 	
 	public static void main(String[] args) {
+		DaoDatabase.getInstance.run();
 		MainActivity main = new MainActivity();
 		main.activity();
 		

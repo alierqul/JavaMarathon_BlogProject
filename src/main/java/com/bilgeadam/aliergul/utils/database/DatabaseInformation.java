@@ -1,49 +1,64 @@
 package com.bilgeadam.aliergul.utils.database;
 
 public class DatabaseInformation {
-	private String URL;
-	private String USER_NAME;
-	private String PASSWORD;
-	private String FOR_NAME_DATA;
+	private String url;
+	private String userName;
+	private String password;
+	private String for_name_data;
+	private String database;
 	
 	public DatabaseInformation() {
-		
-		URL = "jdbc:postgresql://localhost:5432/MarathonBlog";
-		USER_NAME = "boost";
-		PASSWORD = "boost";
-		FOR_NAME_DATA = "org.postgresql.Driver";
+		this.database = "aliergul_blog";
+		this.url = "jdbc:postgresql://localhost:5432/";
+		this.userName = "postgres";
+		this.password = "root";
+		this.for_name_data = "org.postgresql.Driver";
 	}
 	
-	public String getURL() {
-		return URL;
+	@Override
+	public String toString() {
+		return "DatabaseInformation [url=" + url + ", userName=" + userName + ", password=" + password
+				+ ", for_name_data=" + for_name_data + ", database=" + database + "]";
 	}
 	
-	public void setURL(String uRL) {
-		URL = uRL;
+	public String getUrl() {
+		return url;
 	}
 	
-	public String getUSER_NAME() {
-		return USER_NAME;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 	
-	public void setUSER_NAME(String uSER_NAME) {
-		USER_NAME = uSER_NAME;
+	public String getUserName() {
+		return userName;
 	}
 	
-	public String getPASSWORD() {
-		return PASSWORD;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 	
-	public void setPASSWORD(String pASSWORD) {
-		PASSWORD = pASSWORD;
+	public String getPassword() {
+		return password;
 	}
 	
-	public String getFOR_NAME_DATA() {
-		return FOR_NAME_DATA;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
-	public void setFOR_NAME_DATA(String fOR_NAME_DATA) {
-		FOR_NAME_DATA = fOR_NAME_DATA;
+	public String getFor_name_data() {
+		return for_name_data;
+	}
+	
+	public void setFor_name_data(String for_name_data) {
+		this.for_name_data = for_name_data;
+	}
+	
+	public String getDatabase() {
+		return database;
+	}
+	
+	public void setDatabase(String database) {
+		this.database = database;
 	}
 	
 }

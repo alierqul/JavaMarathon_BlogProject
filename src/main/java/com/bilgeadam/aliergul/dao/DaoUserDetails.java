@@ -128,7 +128,7 @@ public class DaoUserDetails implements IUserOperations<DtoUserDetails> {
 			addLogHistoy(dto.getEmail(), isSuccessful, "logIn");
 			
 		} catch (SQLException e) {
-			System.out.println("HATA - insert(UserDto): " + e.getMessage());
+			System.out.println("HATA - logIn_save(UserDto): " + e.getMessage());
 			
 		}
 		return isSuccessful;
